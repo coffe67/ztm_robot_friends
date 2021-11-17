@@ -1,14 +1,28 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import CardList from "./components/CardList";
 import CardSearchBar from "./components/CardSearchBar";
-import {robots} from "../demo_data/robots";
+import Scroll from "./components/Scroll";
+// import {robots} from "../demo_data/robots";
 
 const Body = () => {
 
     const [state, setState] = useState({
-        robots:robots,
+        robots:[],
         searchfield: '',
         clicks: 0
+    })
+
+    useEffect(() =>{
+        if(state.robots.length === 0){
+            fetch('https://jsonplaceholder.typicode.com/users').then(response => {
+                return response.json()
+            }).then(items => {
+                console.log(items)
+                setState({...state, robots: items})
+            }).catch((error) => {
+                console.log(`Error Getting Robots ${error}`)
+            })
+        }
     })
 
     const handleChange = (event) =>{
@@ -22,7 +36,9 @@ const Body = () => {
             <div>
                 <h2>Main Content</h2>
                 <CardSearchBar searchChange={handleChange}/>
-                <CardList robots={filterRobots}/>
+                <Scroll>
+                    <CardList robots={filterRobots}/>
+                </Scroll>
             </div>
         </>
     )
